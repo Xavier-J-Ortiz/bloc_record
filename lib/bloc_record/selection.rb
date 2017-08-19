@@ -145,21 +145,28 @@ module Selection
            SELECT * FROM #{table}
            INNER JOIN #{args.first} ON #{args.first}.#{table}_id = #{table}.id
         SQL
+      when Hash
+        joins = args.map {|arg| nested_join(arg) }.join(" ")
+        rows = connection.execute <<-SQL
+         SELECT * FROM #{table} #{joins}
+        SQL
       end
-    end
 
-    rows_to_array(rows)
-  end
-
-  private
-  def init_object_from_row(row)
-    if row
-      data = Hash[columns.zip(row)]
-      new(data)
     end
   end
 
-  def rows_to_array(rows)
-    rows.map { |row| new(Hash[columns.zip(row)]) }
+  rows_to_array(rows)
+end
+
+private
+def init_object_from_row(row)
+  if row
+    data = Hash[columns.zip(row)]
+    new(data)
   end
+end
+
+def rows_to_array(rows)
+  rows.map { |row| new(Hash[columns.zip(row)]) }
+end
 end
