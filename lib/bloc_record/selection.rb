@@ -110,8 +110,9 @@ module Selection
   end
 
   def order(*args)
+    args.map! {|arg| arg.is_a?(Hash) ? format_hash_to_SQL(arg) : arg} 
     if args.count > 1
-      order = args.join(",")
+      order = args.join(", ")
     else
       order = args.first.to_s
     end
@@ -121,6 +122,10 @@ module Selection
        ORDER BY #{order};
     SQL
     rows_to_array(rows)
+  end
+
+  def format_hash_to_SQL arg
+    arg.map{|k, v| "#{k} #{v.to_s.upcase}"}.join(", ")
   end
 
   def join(*args)
