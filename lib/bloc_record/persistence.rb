@@ -29,6 +29,15 @@ module Persistence
 		true
 	end
 
+
+	def method_missing(name, args)
+		groups_captured = name.to_s.match(/(^update_)(.*)/)
+		if groups_captured 
+			meth, attribute = groups_captured.captures
+			update_attribute(attribute, args)
+		end
+	end
+
 	def update_attribute(attribute, value)
 		self.class.update(self.id, { attribute => value })
 	end
