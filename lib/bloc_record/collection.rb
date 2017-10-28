@@ -55,6 +55,17 @@ module BlocRecord
 			rows_to_array(rows)
 		end
 
+		def destroy_all
+			ids = self.map(&:id)
+			if self.any?
+				ids.each do |id|
+					self.first.class.destroy(id)
+				end
+			else
+				false
+			end
+		end
+
 		def take(num=1)
 			if num > 1
 				rows = connection.execute <<-SQL
